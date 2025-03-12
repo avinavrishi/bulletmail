@@ -3,7 +3,7 @@ from database.session import engine
 from database import models
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import auth
+from routers import auth, service
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -21,6 +21,7 @@ app.add_middleware(
 
 # Include your routers here
 app.include_router(auth.router, prefix="/rest/v1/auth", tags=["Authentication"])
+app.include_router(service.router, prefix="/rest/v1/service", tags=["Mail Services"])
 
 
 if __name__ == "__main__":
