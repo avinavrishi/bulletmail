@@ -8,6 +8,18 @@ from utils.auth_utils import create_access_token, create_refresh_token, verify_p
 from datetime import datetime, timedelta
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 
+from decorators.jwt_decorator import jwt_authorization
+from typing import List, Optional, Dict, Any
+
+def response_formatter(status_code: int, message: str, data: Optional[Any] = None, error_code: Optional[str] = None):
+    return {
+        "status_code": status_code,
+        "error_code": error_code,
+        "message": message,
+        "data": data
+    }
+
+
 router = APIRouter()
 
 # Pydantic Models for Request Validation
@@ -146,3 +158,17 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
             status_code=500,
             detail="Internal server error during authentication"
         )
+
+@router.post("/logout/")
+async def logout(token_data: dict = Depends(jwt_authorization), db: Session = Depends(get_db)):
+    """
+    Logout endpoint: Removes all stored tokens for the authenticated user.
+    """
+    user_id = token_data.get("user_id")
+    if not user_id:
+        return response_formatter(401, "Unauthorized", error_code="AUTH_401")
+    
+    db.query(Token).filter(Token.user_id == user_id).delete()
+    db.commit()
+    
+    return {"msg": "Successfully logged out"}
