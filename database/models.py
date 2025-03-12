@@ -25,6 +25,7 @@ class User(BaseTable):
     tokens = relationship('Token', back_populates='user')
     integrations = relationship('Integration', back_populates='user')
     subscription = relationship('Subscription', uselist=False, back_populates='user')  # One-to-one relationship
+    documents = relationship('Document', back_populates='user')
 
 class Token(Base):
     __tablename__ = 'tokens'
@@ -88,4 +89,3 @@ class Document(BaseTable):
 
     # Relationships
     user = relationship('User', back_populates='documents')
-    campaign_documents = relationship('CampaignDocument', back_populates='document', cascade='all, delete-orphan')

@@ -1,3 +1,4 @@
 .qodo
 dev.conf
 bulletmail.db
+*.pyc
